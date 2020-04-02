@@ -59,7 +59,7 @@ def main(argv=None):
         loss = F.nll_loss(pred, target)
         pred_choice = pred.data.max(1)[1]
         correct = pred_choice.eq(target.data).cpu().sum()
-        print('[%d/%d] train loss: %f accuracy: %f' % (i, data_len, loss.item(), correct.item() / float(opt.batchSize)))
+        print('[%d/%d] train loss: %f accuracy: %f' % (i+1, data_len, loss.item(), correct.item() / float(opt.batchSize)))
         train_accuracy += correct.item() / float(opt.batchSize)
 
     train_accuracy /= i
@@ -77,7 +77,7 @@ def main(argv=None):
         loss = F.nll_loss(pred, target)
         pred_choice = pred.data.max(1)[1]
         correct = pred_choice.eq(target.data).cpu().sum()
-        print('[%d/%d] test loss: %f accuracy: %f' % (i, data_len, loss.item(), correct.item() / float(opt.batchSize)))
+        print('[%d/%d] test loss: %f accuracy: %f' % (i+1, data_len, loss.item(), correct.item() / float(opt.batchSize)))
         test_accuracy += correct.item() / float(opt.batchSize)
 
     test_accuracy /= i

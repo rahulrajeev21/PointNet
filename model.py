@@ -177,10 +177,7 @@ def feature_transform_regularizer(trans):
     # compute |((trans * trans.transpose) - I)|^2
     I_matrix = torch.eye(trans.size()[1])[None, :, :]
     AAT = torch.bmm(trans, trans.transpose(2, 1))
-    if trans.is_cuda:
-        diffMat = AAT - I_matrix.cuda()
-    else:
-        diffMat = AAT - I_matrix
+    diffMat = AAT - I_matrix.cuda()
     loss = torch.norm(diffMat, dim=(1, 2))
     loss = torch.mean(loss)
     return loss
@@ -188,29 +185,38 @@ def feature_transform_regularizer(trans):
 
 if __name__ == '__main__':
     sim_data = Variable(torch.rand(32, 3, 2500))
+    print('Input data dimensions:', sim_data.size())
     trans = TNet(k=3)
     out = trans(sim_data)
     print('TNet', out.size())
-    print('loss', feature_transform_regularizer(out))
+    print('loss', feature_transform_regularizer(out.cuda()))
+
+    feat_trans_reg_testmat = Variable(torch.rand(16, 64, 3))
+    print('Input Matrix for FT Regularizer:', feat_trans_reg_testmat.size())
+    print('Feature Transform Regularizer Output: ', feature_transform_regularizer(feat_trans_reg_testmat.cuda()))
 
     sim_data_64d = Variable(torch.rand(32, 64, 2500))
     trans = TNet(k=64)
     out = trans(sim_data_64d)
     print('TNet 64d', out.size())
-    print('loss', feature_transform_regularizer(out))
+    print('loss', feature_transform_regularizer(out.cuda()))
 
     pointfeat = PointNetfeat(global_feat=True)
+    print('Input data dimensions:', sim_data.size())
     out, _, _ = pointfeat(sim_data)
     print('global feat', out.size())
 
     pointfeat = PointNetfeat(global_feat=False)
+    print('Input data dimensions:', sim_data.size())
     out, _, _ = pointfeat(sim_data)
     print('point feat', out.size())
 
     cls = PointNetCls(k=5)
+    print('Input data dimensions:', sim_data.size())
     out, _, _ = cls(sim_data)
     print('class', out.size())
 
     seg = PointNetDenseCls(k=3)
+    print('Input data dimensions:', sim_data.size())
     out, _, _ = seg(sim_data)
     print('seg', out.size())
